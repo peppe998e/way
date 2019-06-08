@@ -1,5 +1,5 @@
 # Way
-HTTP router for Go 1.7
+HTTP router for GoLang
 
 * Deliberately simple
 * Extremely fast
@@ -12,19 +12,19 @@ HTTP router for Go 1.7
 There's no need to add a dependency to Way, just copy `way.go` and `way_test.go` into your project, or [drop](https://github.com/matryer/drop) them in:
 
 ```
-drop github.com/matryer/way
+drop github.com/peppe998e/way
 ```
 
 If you prefer, it is go gettable:
 
 ```
-go get github.com/matryer/way
+go get github.com/peppe998e/way
 ```
 
 ## Usage
 
 * Use `NewRouter` to make a new `Router`
-* Call `Handle` and `HandleFunc` to add handlers
+* Call `Handle`, `ALL`, `GET`, `POST`... to add handlers
 * Specify HTTP method and path pattern for each route
 * Use `Param` function to get the path parameters from the context
 
@@ -32,9 +32,11 @@ go get github.com/matryer/way
 func main() {
 	router := way.NewRouter()
 
-	router.HandleFunc("GET", "/music/:band/:song", handleReadSong)
-	router.HandleFunc("PUT", "/music/:band/:song", handleUpdateSong)
-	router.HandleFunc("DELETE", "/music/:band/:song", handleDeleteSong)
+	router.GET("/music/:song", handleReadSong)
+	router.Handle(way.WAY_GET, "/music/:band/:song", handleReadSong)
+	
+	router.Handle(way.WAY_GET|way.WAY_POST, "/author/:name", handleUpdateSong)
+	router.DELETE("/author/:name", handleDeleteSong)
 
 	log.Fatalln(http.ListenAndServe(":8080", router))
 }
@@ -54,7 +56,7 @@ To match any path that has a specific prefix, use the `...` prefix indicator:
 func main() {
 	router := way.NewRouter()
 
-	router.HandleFunc("GET", "/images...", handleImages)
+	router.GET("/images...", handleImages)
 	log.Fatalln(http.ListenAndServe(":8080", router))
 }
 ```
